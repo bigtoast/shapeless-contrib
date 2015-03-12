@@ -181,64 +181,78 @@ private trait IsomorphicShow[A, B]
 trait Instances {
 
   // Instances
-
-  implicit def SemigroupI: ProductTypeClass[Semigroup] = new ProductTypeClass[Semigroup] with Empty {
-    def product[F, T <: HList](f: Semigroup[F], t: Semigroup[T]) =
-      new ProductSemigroup[F, T] { def F = f; def T = t }
-    def project[A, B](b: => Semigroup[B], ab: A => B, ba: B => A) =
-      new IsomorphicSemigroup[A, B] { def B = b; def to = ab; def from = ba }
+  implicit object SemigroupCompanion extends ProductTypeClassCompanion[Semigroup] {
+    val typeClass :ProductTypeClass[Semigroup] = new ProductTypeClass[Semigroup] with Empty {
+      def product[F, T <: HList](f: Semigroup[F], t: Semigroup[T]) =
+        new ProductSemigroup[F, T] { def F = f; def T = t }
+      def project[A, B](b: => Semigroup[B], ab: A => B, ba: B => A) =
+        new IsomorphicSemigroup[A, B] { def B = b; def to = ab; def from = ba }
+    }
   }
 
-  implicit def MonoidI: ProductTypeClass[Monoid] = new ProductTypeClass[Monoid] with Empty {
-    def product[F, T <: HList](f: Monoid[F], t: Monoid[T]) =
-      new ProductMonoid[F, T] { def F = f; def T = t }
-    def project[A, B](b: => Monoid[B], ab: A => B, ba: B => A) =
-      new IsomorphicMonoid[A, B] { def B = b; def to = ab; def from = ba }
+  implicit object MonoidCompanion extends ProductTypeClassCompanion[Monoid] {
+    val typeClass : ProductTypeClass[Monoid] = new ProductTypeClass[Monoid] with Empty {
+      def product[F, T <: HList](f: Monoid[F], t: Monoid[T]) =
+        new ProductMonoid[F, T] { def F = f; def T = t }
+      def project[A, B](b: => Monoid[B], ab: A => B, ba: B => A) =
+        new IsomorphicMonoid[A, B] { def B = b; def to = ab; def from = ba }
+    }
   }
 
-  implicit def EqualI: TypeClass[Equal] = new TypeClass[Equal] with Empty {
-    def product[F, T <: HList](f: Equal[F], t: Equal[T]) =
-      new ProductEqual[F, T] { def F = f; def T = t }
-    def coproduct[L, R <: Coproduct](l: => Equal[L], r: => Equal[R]) =
-      new SumEqual[L, R] { def L = l; def R = r }
-    def project[A, B](b: => Equal[B], ab: A => B, ba: B => A) =
-      new IsomorphicEqual[A, B] { def B = b; def to = ab; def from = ba }
+  implicit object EqualCompanion extends TypeClassCompanion[Equal] {
+    val typeClass :TypeClass[Equal] = new TypeClass[Equal] with Empty {
+      def product[F, T <: HList](f: Equal[F], t: Equal[T]) =
+        new ProductEqual[F, T] { def F = f; def T = t }
+      def coproduct[L, R <: Coproduct](l: => Equal[L], r: => Equal[R]) =
+        new SumEqual[L, R] { def L = l; def R = r }
+      def project[A, B](b: => Equal[B], ab: A => B, ba: B => A) =
+        new IsomorphicEqual[A, B] { def B = b; def to = ab; def from = ba }
+    }
   }
 
-  implicit def ShowI: TypeClass[Show] = new TypeClass[Show] with Empty {
-    def product[F, T <: HList](f: Show[F], t: Show[T]) =
-      new ProductShow[F, T] { def F = f; def T = t }
-    def coproduct[L, R <: Coproduct](l: => Show[L], r: => Show[R]) =
-      new SumShow[L, R] { def L = l; def R = r }
-    def project[A, B](b: => Show[B], ab: A => B, ba: B => A) =
-      new IsomorphicShow[A, B] { def B = b; def to = ab; def from = ba }
+  implicit object ShowCompanion extends TypeClassCompanion[Show] {
+    val typeClass: TypeClass[Show] = new TypeClass[Show] with Empty {
+      def product[F, T <: HList](f: Show[F], t: Show[T]) =
+        new ProductShow[F, T] { def F = f; def T = t }
+      def coproduct[L, R <: Coproduct](l: => Show[L], r: => Show[R]) =
+        new SumShow[L, R] { def L = l; def R = r }
+      def project[A, B](b: => Show[B], ab: A => B, ba: B => A) =
+        new IsomorphicShow[A, B] { def B = b; def to = ab; def from = ba }
+    }
   }
 
-  implicit def OrderI: TypeClass[Order] = new TypeClass[Order] with Empty {
-    def product[F, T <: HList](f: Order[F], t: Order[T]) =
-      new ProductOrder[F, T] { def F = f; def T = t }
-    def coproduct[L, R <: Coproduct](l: => Order[L], r: => Order[R]) =
-      new SumOrder[L, R] { def L = l; def R = r }
-    def project[A, B](b: => Order[B], ab: A => B, ba: B => A) =
-      new IsomorphicOrder[A, B] { def B = b; def to = ab; def from = ba }
+  implicit object OrderCompanion extends TypeClassCompanion[Order] {
+    val typeClass : TypeClass[Order] = new TypeClass[Order] with Empty {
+      def product[F, T <: HList](f: Order[F], t: Order[T]) =
+        new ProductOrder[F, T] { def F = f; def T = t }
+      def coproduct[L, R <: Coproduct](l: => Order[L], r: => Order[R]) =
+        new SumOrder[L, R] { def L = l; def R = r }
+      def project[A, B](b: => Order[B], ab: A => B, ba: B => A) =
+        new IsomorphicOrder[A, B] { def B = b; def to = ab; def from = ba }
+    }
   }
 
 
   // Boilerplate
 
-  implicit def deriveSemigroup[T](implicit ev: ProductTypeClass[Semigroup]): Semigroup[T] =
-    macro GenericMacros.deriveProductInstance[Semigroup, T]
+  implicit def deriveSemigroup[T,F](
+    implicit ev: ProductTypeClassCompanion[Semigroup],
+    gen :Generic.Aux[T,F], lz :Lazy[Semigroup[F]]): Semigroup[T] = ev.deriveInstance[T,F]
 
-  implicit def deriveMonoid[T](implicit ev: ProductTypeClass[Monoid]): Monoid[T] =
-    macro GenericMacros.deriveProductInstance[Monoid, T]
+  implicit def deriveMonoid[T,F](
+    implicit ev: ProductTypeClassCompanion[Monoid],
+    gen :Generic.Aux[T,F], lz :Lazy[Monoid[F]]): Monoid[T] = ev.deriveInstance[T,F]
 
-  implicit def deriveEqual[T](implicit ev: TypeClass[Equal]): Equal[T] =
-    macro GenericMacros.deriveInstance[Equal, T]
+  implicit def deriveEqual[T,F](
+    implicit ev: TypeClassCompanion[Equal],
+    gen :Generic.Aux[T,F], lz :Lazy[Equal[F]]): Equal[T] = ev.deriveInstance[T,F]
 
-  implicit def deriveOrder[T](implicit ev: TypeClass[Order]): Order[T] =
-    macro GenericMacros.deriveInstance[Order, T]
+  implicit def deriveOrder[T,F](
+    implicit ev: TypeClassCompanion[Order],
+    gen :Generic.Aux[T,F], lz :Lazy[Order[F]]): Order[T] = ev.deriveInstance[T,F]
 
-  implicit def deriveShow[T](implicit ev: TypeClass[Show]): Show[T] =
-    macro GenericMacros.deriveInstance[Show, T]
+  implicit def deriveShow[T,F](
+    implicit ev: TypeClassCompanion[Show],
+    gen :Generic.Aux[T,F], lz :Lazy[Show[F]]): Show[T] = ev.deriveInstance[T,F]
 
 }

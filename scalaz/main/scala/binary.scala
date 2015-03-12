@@ -116,7 +116,8 @@ object Binary extends TypeClassCompanion[Binary] {
 
   // Binary is a TypeClass
 
-  implicit val BinaryInstance: TypeClass[Binary] = new TypeClass[Binary] {
+  //implicit val BinaryInstance: TypeClass[Binary] = new TypeClass[Binary] {
+  object typeClass extends TypeClass[Binary] {
 
     def emptyProduct = new Binary[HNil] {
       def encode(hnil: HNil) = Vector()
@@ -126,14 +127,14 @@ object Binary extends TypeClassCompanion[Binary] {
     def project[F, G](instance: => Binary[G], to: F => G, from: G => F) =
       instance.project(to, from)
 
-    def product[H, T <: HList](BHead: Binary[H], BTail: Binary[T]) = new ProductBinary[H :: T, H, T] {
+    def product[H, T <: HList](BHead: Binary[H], BTail: Binary[T]) :Binary[H :: T] = new ProductBinary[H :: T, H, T] {
       def A = BHead
       def B = BTail
       def fold[X](p: H :: T)(f: (H, T) => X) = f(p.head, p.tail)
       def prod(h: H, t: T) = h :: t
     }
 
-    def coproduct[L, R <: Coproduct](CL: => Binary[L],CR: => Binary[R]) = new SumBinary[L :+: R, L, R] {
+    def coproduct[L, R <: Coproduct](CL: => Binary[L],CR: => Binary[R]) :Binary[L :+: R] = new SumBinary[L :+: R, L, R] {
       def A = CL
       def B = CR
       def fold[X](s: L :+: R)(left: L => X, right: R => X) = s match {

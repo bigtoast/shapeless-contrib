@@ -11,9 +11,10 @@ import com.typesafe.sbt.pgp.PgpKeys._
 
 object ShapelessContribBuild extends Build {
 
-  val shapelessVersion = "2.0.0"
-  val scalazVersion = "7.1.0"
-  val scalacheckVersion = "1.11.3"
+  val shapelessVersion  = "2.1.0"
+  val scalazVersion     = "7.1.1"
+  val scalacheckVersion = "1.12.2"
+  val spireVersion      = "0.9.0"
 
   val shapeless = Def setting (
       CrossVersion partialVersion scalaVersion.value match {
@@ -46,7 +47,7 @@ object ShapelessContribBuild extends Build {
     licenses := Seq("MIT" → url("http://www.opensource.org/licenses/mit-license.php")),
     homepage := Some(url("http://typelevel.org/")),
 
-    scalaVersion := "2.11.5",
+    scalaVersion := "2.11.6",
     crossScalaVersions := Seq("2.10.4"),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-language:experimental.macros"),
 
@@ -134,12 +135,12 @@ object ShapelessContribBuild extends Build {
     settings = standardSettings ++ Seq(
       name := "shapeless-scalaz",
       libraryDependencies ++= Seq(
-        "org.scalaz" %% "scalaz-core" % scalazVersion,
+        "org.scalaz"     %% "scalaz-core"                % scalazVersion,
 
-        "org.specs2" %% "specs2" % "2.4" % "test",
-        "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test",
-        "org.scalaz" %% "scalaz-scalacheck-binding" % scalazVersion % "test",
-        "org.typelevel" %% "scalaz-specs2" % "0.3.0" % "test"
+        "org.specs2"     %% "specs2"                     % "2.4" % "test",
+        "org.scalacheck" %% "scalacheck"                 % scalacheckVersion % "test",
+        "org.scalaz"     %% "scalaz-scalacheck-binding"  % scalazVersion % "test",
+        "org.typelevel"  %% "scalaz-specs2"              % "0.3.0" % "test"
       )
     )
   )
@@ -151,10 +152,10 @@ object ShapelessContribBuild extends Build {
     settings = standardSettings ++ Seq(
       name := "shapeless-spire",
       libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % "2.1.3" % "test",
-        "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test",
-        "org.spire-math" %% "spire" % "0.8.2",
-        "org.spire-math" %% "spire-scalacheck-binding" % "0.8.2" % "test"
+        "org.scalatest"  %% "scalatest"                 % "2.1.3" % "test",
+        "org.scalacheck" %% "scalacheck"                % scalacheckVersion % "test",
+        "org.spire-math" %% "spire"                     % spireVersion,
+        "org.spire-math" %% "spire-scalacheck-binding"  % spireVersion % "test"
       )
     )
   )

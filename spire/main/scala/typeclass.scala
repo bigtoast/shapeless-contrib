@@ -44,6 +44,17 @@ private trait ProductEq[F, T <: HList]
 
 }
 
+private trait SumEq[L, R <: Coproduct]
+    extends Eq[L :+: R]
+    with Sum[Eq, L, R] {
+
+  def eqv(a1: λ, a2: λ) = (a1, a2) match {
+    case (Inl(l1), Inl(l2)) => L.eqv(l1, l2)
+    case (Inr(r1), Inr(r2)) => R.eqv(r1, r2)
+    case _ => false
+  }
+}
+
 private trait ProductOrder[F, T <: HList]
   extends ProductEq[F, T]
   with Order[F :: T]
